@@ -12,8 +12,8 @@ func NewVersionHandler() *Handler {
 	return &Handler{}
 }
 
-func (h *Handler) Register(mux *http.ServeMux) {
-	mux.HandleFunc("/version", h.handleVersion)
+func (h *Handler) Register(prefix string, mux *http.ServeMux) {
+	mux.HandleFunc(prefix+"/version", h.handleVersion)
 }
 
 func (h *Handler) handleVersion(r http.ResponseWriter, req *http.Request) {

@@ -10,9 +10,9 @@ import (
 func TestPingHandler(t *testing.T) {
 	mux := http.NewServeMux()
 	h := NewPingHandler()
-	h.Register(mux)
+	h.Register("/api/v1", mux)
 
-	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/v1/ping", nil)
 	if err != nil {
 		t.Fatalf("could not create request: %v", err)
 	}

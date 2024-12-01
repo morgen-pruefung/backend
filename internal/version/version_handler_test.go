@@ -15,9 +15,9 @@ func TestUnknownVersion(t *testing.T) {
 	}
 
 	mux := http.NewServeMux()
-	h.Register(mux)
+	h.Register("/api/v1", mux)
 
-	req, err := http.NewRequest("GET", "/version", nil)
+	req, err := http.NewRequest("GET", "/api/v1/version", nil)
 	if err != nil {
 		t.Fatalf("error creating request: %v", err)
 	}
@@ -43,9 +43,9 @@ func TestVersion(t *testing.T) {
 	}
 
 	mux := http.NewServeMux()
-	h.Register(mux)
+	h.Register("/api/v1", mux)
 
-	req, err := http.NewRequest("GET", "/version", nil)
+	req, err := http.NewRequest("GET", "/api/v1/version", nil)
 	if err != nil {
 		t.Fatalf("error creating request: %v", err)
 	}

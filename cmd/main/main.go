@@ -8,6 +8,10 @@ import (
 	"os"
 )
 
+const (
+	apiPrefix = "/api/v1"
+)
+
 func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.Printf("Starting server...")
@@ -16,10 +20,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	pingHandler := ping.NewPingHandler()
-	pingHandler.Register(mux)
+	pingHandler.Register(apiPrefix, mux)
 
 	versionHandler := version.NewVersionHandler()
-	versionHandler.Register(mux)
+	versionHandler.Register(apiPrefix, mux)
 
 	go func() {
 		err := http.ListenAndServe(":"+port, mux)
