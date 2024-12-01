@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/internal/ping"
+	"backend/internal/version"
 	"log"
 	"net/http"
 	"os"
@@ -16,6 +17,9 @@ func main() {
 
 	pingHandler := ping.NewPingHandler()
 	pingHandler.Register(mux)
+
+	versionHandler := version.NewVersionHandler()
+	versionHandler.Register(mux)
 
 	go func() {
 		err := http.ListenAndServe(":"+port, mux)
