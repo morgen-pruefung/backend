@@ -16,5 +16,4 @@ func (h *Handler) Register(prefix string, mux *http.ServeMux) {
 func (h *Handler) handlePing(r http.ResponseWriter, req *http.Request) {
 	r.WriteHeader(http.StatusOK)
 	r.Write([]byte("pong"))
-
 }

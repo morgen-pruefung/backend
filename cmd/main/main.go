@@ -26,7 +26,7 @@ func main() {
 	versionHandler.Register(apiPrefix, mux)
 
 	go func() {
-		err := http.ListenAndServe(":"+port, mux)
+		err := http.ListenAndServe(":"+port, recoverMiddleware(mux))
 		if err != nil {
 			log.Fatalf("error starting server: %v", err)
 			return
@@ -36,6 +36,19 @@ func main() {
 
 	c := make(chan struct{}, 1) // Block forever
 	<-c
+}
+
+// Middleware to catch panics and return an error response
+func recoverMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				log.Printf("Recovered from panic: %v", rec)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
 }
 
 func mustGetPort() string {
