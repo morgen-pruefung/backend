@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/internal/logger"
 	"backend/internal/ping"
 	"backend/internal/version"
 	"log"
@@ -26,7 +27,7 @@ func main() {
 	versionHandler.Register(apiPrefix, mux)
 
 	go func() {
-		err := http.ListenAndServe(":"+port, recoverMiddleware(mux))
+		err := http.ListenAndServe(":"+port, recoverMiddleware(logger.LogRequest(mux)))
 		if err != nil {
 			log.Fatalf("error starting server: %v", err)
 			return
