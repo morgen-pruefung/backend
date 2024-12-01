@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/internal/ping"
 	"log"
 	"net/http"
 	"os"
@@ -13,9 +14,8 @@ func main() {
 	port := mustGetPort()
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World!"))
-	})
+	pingHandler := ping.NewPingHandler()
+	pingHandler.Register(mux)
 
 	go func() {
 		err := http.ListenAndServe(":"+port, mux)
