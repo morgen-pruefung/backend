@@ -1,0 +1,24 @@
+services:
+  backend:
+    image: mp-backend
+    container_name: mp-backend
+    ports:
+      - "4242:4242"
+    environment:
+      - PORT=4242
+    networks:
+      - mp-network
+    depends_on:
+      - frontend
+
+  frontend:
+    image: mp-frontend
+    container_name: mp-frontend
+    ports:
+      - "4343:80"
+    networks:
+      - mp-network
+
+networks:
+  mp-network:
+    driver: bridge
