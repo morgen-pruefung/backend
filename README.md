@@ -7,5 +7,6 @@
 ## Build and run
 
 ```bash
-go build -o out .
+$ go build -o out/backend ./...
+$ ./out/backend
 ```
