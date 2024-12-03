@@ -1,6 +1,6 @@
 services:
   backend:
-    image: mp-backend
+    image: morgenpruefung/mp-backend
     restart: on-failure
     container_name: mp-backend
     ports:
@@ -13,7 +13,7 @@ services:
       - frontend
 
   frontend:
-    image: mp-frontend
+    image: morgenpruefung/mp-frontend
     restart: on-failure
     container_name: mp-frontend
     ports:
