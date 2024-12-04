@@ -31,6 +31,7 @@ func LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		lrw := &logResponseWriter{ResponseWriter: w}
+		lrw.statusCode = http.StatusOK
 
 		next.ServeHTTP(lrw, r)
 

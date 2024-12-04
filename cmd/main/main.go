@@ -34,7 +34,7 @@ func main() {
 	blogHandler.Register(apiPrefix, mux)
 
 	go func() {
-		err := http.ListenAndServe(":"+port, recoverMiddleware(logger.LogRequest(mux)))
+		err := http.ListenAndServe(":"+port, corsMiddleware(recoverMiddleware(logger.LogRequest(mux))))
 		if err != nil {
 			log.Fatalf("error starting server: %v", err)
 			return
@@ -55,6 +55,14 @@ func recoverMiddleware(next http.Handler) http.Handler {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			}
 		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
+// Middleware to add CORS header
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		next.ServeHTTP(w, r)
 	})
 }
