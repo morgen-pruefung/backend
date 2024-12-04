@@ -42,6 +42,7 @@ func (h *Handler) handleGetArticles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "max-age=3600")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
@@ -63,6 +64,7 @@ func (h *Handler) handleGetArticle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "max-age=3600")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }

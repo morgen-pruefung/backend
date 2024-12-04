@@ -24,7 +24,6 @@ func StartUpdateTicker() {
 		if err != nil {
 			log.Fatalf("Error cloning repo: %s\n", err)
 		}
-		return
 	}
 
 	ticker := time.NewTicker(5 * time.Minute)
