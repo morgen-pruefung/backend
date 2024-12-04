@@ -8,7 +8,7 @@ import (
 const repoDir = "data/repositories/"
 
 func CloneRepo(name, url string) error {
-	dir := repoDir + name
+	dir := repoDir
 	if _, err := os.Stat(dir); err == nil {
 		return nil
 	} else if os.IsNotExist(err) {
@@ -18,7 +18,7 @@ func CloneRepo(name, url string) error {
 		}
 	}
 
-	cmd := exec.Command("git", "clone", url)
+	cmd := exec.Command("git", "clone", url, name)
 	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

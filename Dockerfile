@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy the Go module files and download dependencies
 COPY go.mod ./
+RUN go mod download
 
 # Copy the rest of the application's source code
 COPY . .
@@ -19,11 +20,11 @@ FROM alpine:latest
 # Set the working directory inside the container
 WORKDIR /app
 
+# Install Git and any necessary certificates
+RUN apk add --no-cache git ca-certificates
+
 # Copy the Go binary from the builder stage
 COPY --from=builder /app/mp-app .
-
-# Install any necessary certificates (if your app needs to make HTTPS requests)
-RUN apk add --no-cache ca-certificates
 
 # Expose the port the app will run on
 EXPOSE 8080

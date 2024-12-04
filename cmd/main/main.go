@@ -1,6 +1,8 @@
 package main
 
 import (
+	"backend/internal/blog"
+	"backend/internal/blog/blogstore"
 	"backend/internal/logger"
 	"backend/internal/ping"
 	"backend/internal/version"
@@ -25,6 +27,11 @@ func main() {
 
 	versionHandler := version.NewVersionHandler()
 	versionHandler.Register(apiPrefix, mux)
+
+	blogStore := blogstore.NewStore()
+	blogstore.StartUpdateTicker()
+	blogHandler := blog.NewHandler(blogStore)
+	blogHandler.Register(apiPrefix, mux)
 
 	go func() {
 		err := http.ListenAndServe(":"+port, recoverMiddleware(logger.LogRequest(mux)))
