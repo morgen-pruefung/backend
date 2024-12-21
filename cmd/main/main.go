@@ -79,7 +79,7 @@ func pullBibliothek() {
 		}
 	}
 
-	ticker := time.NewTicker(5 * time.Minute)
+	ticker := time.NewTicker(30 * time.Minute)
 	go func() {
 		for {
 			select {
