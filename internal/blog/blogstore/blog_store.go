@@ -4,8 +4,6 @@ import (
 	"backend/internal/blog"
 	"backend/internal/github"
 	"encoding/json"
-	"log"
-	"time"
 )
 
 const BibliothekRepo = "bibliothek"
@@ -16,32 +14,6 @@ type Store struct {
 func NewStore() *Store {
 	return &Store{}
 }
-
-func StartUpdateTicker() {
-	_, err := github.ListFiles(BibliothekRepo, "")
-	if err != nil {
-		err := github.CloneRepo(BibliothekRepo, "https://github.com/morgen-pruefung/bibliothek.git")
-		if err != nil {
-			log.Fatalf("Error cloning repo: %s\n", err)
-		}
-	}
-
-	ticker := time.NewTicker(5 * time.Minute)
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				err := github.PullRepo(BibliothekRepo)
-				if err != nil {
-					log.Println("Error pulling repo:", err)
-					continue
-				}
-				log.Printf("Pulled repo %s\n", BibliothekRepo)
-			}
-		}
-	}()
-}
-
 func (s *Store) GetArticles() ([]blog.Article, error) {
 	files, err := github.ListFiles(BibliothekRepo, "blog/articles")
 	if err != nil {

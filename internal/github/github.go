@@ -7,6 +7,10 @@ import (
 
 const repoDir = "data/repositories/"
 
+const (
+	BibliothekRepo = "bibliothek"
+)
+
 func CloneRepo(name, url string) error {
 	dir := repoDir
 	if _, err := os.Stat(dir); err == nil {

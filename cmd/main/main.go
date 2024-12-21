@@ -3,12 +3,14 @@ package main
 import (
 	"backend/internal/blog"
 	"backend/internal/blog/blogstore"
+	"backend/internal/github"
 	"backend/internal/logger"
 	"backend/internal/ping"
 	"backend/internal/version"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 const (
@@ -22,6 +24,8 @@ func main() {
 	port := mustGetPort()
 	mux := http.NewServeMux()
 
+	pullBibliothek()
+
 	pingHandler := ping.NewPingHandler()
 	pingHandler.Register(apiPrefix, mux)
 
@@ -29,7 +33,6 @@ func main() {
 	versionHandler.Register(apiPrefix, mux)
 
 	blogStore := blogstore.NewStore()
-	blogstore.StartUpdateTicker()
 	blogHandler := blog.NewHandler(blogStore)
 	blogHandler.Register(apiPrefix, mux)
 
@@ -65,6 +68,31 @@ func corsMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		next.ServeHTTP(w, r)
 	})
+}
+
+func pullBibliothek() {
+	_, err := github.ListFiles(github.BibliothekRepo, "")
+	if err != nil {
+		err := github.CloneRepo(github.BibliothekRepo, "https://github.com/morgen-pruefung/bibliothek.git")
+		if err != nil {
+			log.Fatalf("Error cloning repo: %s\n", err)
+		}
+	}
+
+	ticker := time.NewTicker(5 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				err := github.PullRepo(github.BibliothekRepo)
+				if err != nil {
+					log.Println("Error pulling repo:", err)
+					continue
+				}
+				log.Printf("Pulled repo %s\n", github.BibliothekRepo)
+			}
+		}
+	}()
 }
 
 func mustGetPort() string {
