@@ -14,7 +14,7 @@ func NewStore() *Store {
 }
 
 func (s *Store) GetArticles() ([]blog.Article, error) {
-	files, err := github.ListFiles(github.BibliothekRepo, "blog/articles")
+	files, err := github.ListFiles(github.BibliothekRepo, "blog-articles")
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (s *Store) GetArticles() ([]blog.Article, error) {
 }
 
 func (s *Store) GetArticle(articleID string) (*blog.Article, error) {
-	metadata, err := github.ReadFile(github.BibliothekRepo, "blog/articles/"+articleID+"/"+articleID+".json")
+	metadata, err := github.ReadFile(github.BibliothekRepo, "blog-articles/"+articleID+"/article.json")
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (s *Store) GetArticle(articleID string) (*blog.Article, error) {
 		return nil, err
 	}
 
-	content, err := github.ReadFile(github.BibliothekRepo, "blog/articles/"+articleID+"/"+articleID+".md")
+	content, err := github.ReadFile(github.BibliothekRepo, "blog-articles/"+articleID+"/content.md")
 	if err != nil {
 		return nil, err
 	}
