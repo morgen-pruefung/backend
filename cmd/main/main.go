@@ -6,6 +6,8 @@ import (
 	"backend/internal/github"
 	"backend/internal/logger"
 	"backend/internal/ping"
+	"backend/internal/topic"
+	"backend/internal/topic/topicstore"
 	"backend/internal/version"
 	"log"
 	"net/http"
@@ -36,6 +38,10 @@ func main() {
 	blogHandler := blog.NewHandler(blogStore)
 	blogHandler.Register(apiPrefix, mux)
 
+	topicStore := topicstore.NewStore()
+	topicHandler := topic.NewHandler(topicStore)
+	topicHandler.Register(apiPrefix, mux)
+
 	go func() {
 		err := http.ListenAndServe(":"+port, corsMiddleware(recoverMiddleware(logger.LogRequest(mux))))
 		if err != nil {
@@ -55,7 +61,7 @@ func recoverMiddleware(next http.Handler) http.Handler {
 		defer func() {
 			if rec := recover(); rec != nil {
 				log.Printf("Recovered from panic: %v", rec)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
 		}()
 		next.ServeHTTP(w, r)

@@ -30,14 +30,14 @@ func (h *Handler) Register(prefix string, mux *http.ServeMux) {
 func (h *Handler) handleGetArticles(w http.ResponseWriter, r *http.Request) {
 	articles, err := h.store.GetArticles()
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("Error getting articles: %v\n", err)
 		return
 	}
 
 	data, err := json.Marshal(articles)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("Error marshalling articles: %v\n", err)
 		return
 	}
@@ -52,14 +52,14 @@ func (h *Handler) handleGetArticle(w http.ResponseWriter, r *http.Request) {
 	articleID := r.PathValue("article_id")
 	article, err := h.store.GetArticle(articleID)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("Error getting article: %v\n", err)
 		return
 	}
 
 	data, err := json.Marshal(article)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("Error marshalling article: %v\n", err)
 		return
 	}
