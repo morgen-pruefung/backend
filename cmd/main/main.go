@@ -3,6 +3,8 @@ package main
 import (
 	"backend/internal/blog"
 	"backend/internal/blog/blogstore"
+	"backend/internal/exam"
+	"backend/internal/exam/examstore"
 	"backend/internal/github"
 	"backend/internal/logger"
 	"backend/internal/ping"
@@ -41,6 +43,10 @@ func main() {
 	topicStore := topicstore.NewStore()
 	topicHandler := topic.NewHandler(topicStore)
 	topicHandler.Register(apiPrefix, mux)
+
+	examStore := examstore.NewStore()
+	examHandler := exam.NewHandler(examStore)
+	examHandler.Register(apiPrefix, mux)
 
 	go func() {
 		err := http.ListenAndServe(":"+port, corsMiddleware(recoverMiddleware(logger.LogRequest(mux))))
