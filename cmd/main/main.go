@@ -89,6 +89,11 @@ func pullBibliothek() {
 		if err != nil {
 			log.Fatalf("Error cloning repo: %s\n", err)
 		}
+	} else {
+		err := github.PullRepo(github.BibliothekRepo)
+		if err != nil {
+			log.Fatalf("Error pulling repo: %s\n", err)
+		}
 	}
 
 	ticker := time.NewTicker(30 * time.Minute)
