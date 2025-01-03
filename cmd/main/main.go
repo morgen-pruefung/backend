@@ -31,6 +31,9 @@ func main() {
 
 	pullBibliothek()
 
+	analyticsHandler := analytics.NewHandler()
+	analyticsHandler.Register(apiPrefix, mux)
+
 	pingHandler := ping.NewPingHandler()
 	pingHandler.Register(apiPrefix, mux)
 
