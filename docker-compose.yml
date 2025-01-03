@@ -7,6 +7,8 @@ services:
       - "4242:4242"
     environment:
       - PORT=4242
+      - FANCYANALYTICS_PROJECT_ID=
+      - FANCYANALYTICS_API_KEY=
     networks:
       - mp-network
     depends_on:
