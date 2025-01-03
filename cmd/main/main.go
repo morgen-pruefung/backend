@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/internal/analytics"
 	"backend/internal/blog"
 	"backend/internal/blog/blogstore"
 	"backend/internal/exam"
@@ -30,6 +31,9 @@ func main() {
 
 	pullBibliothek()
 
+	analyticsHandler := analytics.NewHandler()
+	analyticsHandler.Register(apiPrefix, mux)
+
 	pingHandler := ping.NewPingHandler()
 	pingHandler.Register(apiPrefix, mux)
 
@@ -56,6 +60,11 @@ func main() {
 		}
 	}()
 	log.Printf("Server started on port %s", port)
+
+	analytics.SendEvent(analytics.Event{
+		Name:       "ServerStarted",
+		Properties: map[string]interface{}{},
+	})
 
 	c := make(chan struct{}, 1) // Block forever
 	<-c
