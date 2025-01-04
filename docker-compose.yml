@@ -9,6 +9,7 @@ services:
       - PORT=4242
       - FANCYANALYTICS_PROJECT_ID=
       - FANCYANALYTICS_API_KEY=
+      - MONGODB_URI=
     networks:
       - mp-network
     depends_on:

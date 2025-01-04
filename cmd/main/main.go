@@ -143,9 +143,9 @@ func pullBibliothek() {
 }
 
 func mustGetMongoURL() string {
-	url := os.Getenv("MONGO_URL")
+	url := os.Getenv("MONGODB_URI")
 	if url == "" {
-		log.Fatalf("MONGO_URL must be set")
+		log.Fatalf("MONGODB_URI must be set")
 	}
 
 	return url
