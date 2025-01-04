@@ -1,6 +1,7 @@
 package newsletterstore
 
 import (
+	"backend/internal/analytics"
 	"backend/internal/newsletter"
 	"context"
 	"fmt"
@@ -38,11 +39,26 @@ func (s *Store) Subscribe(ctx context.Context, e newsletter.Entry) error {
 		return fmt.Errorf("could not subscribe to newsletter: %w", err)
 	}
 
+	analytics.SendEvent(analytics.Event{
+		Name:       "NewsletterSubscribed",
+		Properties: map[string]interface{}{},
+	})
+
 	return nil
 }
 
 func (s *Store) Unsubscribe(ctx context.Context, e newsletter.Entry) error {
-	return s.db.Unsubscribe(ctx, e)
+	err := s.db.Unsubscribe(ctx, e)
+	if err != nil {
+		return fmt.Errorf("could not unsubscribe from newsletter: %w", err)
+	}
+
+	analytics.SendEvent(analytics.Event{
+		Name:       "NewsletterUnsubscribed",
+		Properties: map[string]interface{}{},
+	})
+
+	return nil
 }
 
 func (s *Store) GetSubscribers(ctx context.Context) ([]newsletter.Entry, error) {
