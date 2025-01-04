@@ -8,10 +8,16 @@ import (
 	"backend/internal/exam/examstore"
 	"backend/internal/github"
 	"backend/internal/logger"
+	"backend/internal/newsletter"
+	"backend/internal/newsletter/newsletterstore"
+	"backend/internal/newsletter/newsletterstore/newsletterdatabase"
 	"backend/internal/ping"
 	"backend/internal/topic"
 	"backend/internal/topic/topicstore"
 	"backend/internal/version"
+	"context"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 	"os"
@@ -28,6 +34,16 @@ func main() {
 
 	port := mustGetPort()
 	mux := http.NewServeMux()
+
+	mClientOptions := options.Client()
+	mClientOptions.ApplyURI(mustGetMongoURL())
+
+	mClient, err := mongo.Connect(context.Background(), mClientOptions)
+	if err != nil {
+		log.Fatalf("error connecting to mongo: %v", err)
+	}
+
+	mDB := mClient.Database("morgen-pruefung")
 
 	pullBibliothek()
 
@@ -51,6 +67,11 @@ func main() {
 	examStore := examstore.NewStore()
 	examHandler := exam.NewHandler(examStore)
 	examHandler.Register(apiPrefix, mux)
+
+	newsletterDB := newsletterdatabase.NewDB(mDB.Collection("newsletter"))
+	newsletterStore := newsletterstore.NewStore(newsletterDB)
+	newsletterHandler := newsletter.NewHandler(newsletterStore)
+	newsletterHandler.Register(apiPrefix, mux)
 
 	go func() {
 		err := http.ListenAndServe(":"+port, corsMiddleware(recoverMiddleware(logger.LogRequest(mux))))
@@ -119,6 +140,15 @@ func pullBibliothek() {
 			}
 		}
 	}()
+}
+
+func mustGetMongoURL() string {
+	url := os.Getenv("MONGO_URL")
+	if url == "" {
+		log.Fatalf("MONGO_URL must be set")
+	}
+
+	return url
 }
 
 func mustGetPort() string {
