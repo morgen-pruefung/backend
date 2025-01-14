@@ -16,6 +16,9 @@ import (
 	"backend/internal/topic/topicstore"
 	"backend/internal/version"
 	"context"
+	"fmt"
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -32,18 +35,15 @@ func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.Printf("Starting server...")
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	port := mustGetPort()
 	mux := http.NewServeMux()
 
-	mClientOptions := options.Client()
-	mClientOptions.ApplyURI(mustGetMongoURL())
-
-	mClient, err := mongo.Connect(context.Background(), mClientOptions)
-	if err != nil {
-		log.Fatalf("error connecting to mongo: %v", err)
-	}
-
-	mDB := mClient.Database("morgen-pruefung")
+	mDB := ConnectToMongoDB()
 
 	pullBibliothek()
 
@@ -112,6 +112,24 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func ConnectToMongoDB() *mongo.Database {
+	opts := options.Client().ApplyURI(mustGetMongoURL())
+	client, err := mongo.Connect(context.Background(), opts)
+	if err != nil {
+		log.Fatalf("Error connecting to MongoDB: %v", err)
+	}
+
+	// Send a ping to confirm a successful connection
+	if err := client.Database("admin").RunCommand(context.Background(), bson.D{{"ping", 1}}).Err(); err != nil {
+		log.Fatalf("Error pinging MongoDB: %v", err)
+	}
+
+	mDB := client.Database(mustGetMongoDBName())
+
+	fmt.Println("Connected to MongoDB")
+	return mDB
+}
+
 func pullBibliothek() {
 	_, err := github.ListFiles(github.BibliothekRepo, "")
 	if err != nil {
@@ -149,6 +167,15 @@ func mustGetMongoURL() string {
 	}
 
 	return url
+}
+
+func mustGetMongoDBName() string {
+	name := os.Getenv("MONGODB_DB_NAME")
+	if name == "" {
+		log.Fatalf("MONGODB_DB_NAME must be set")
+	}
+
+	return name
 }
 
 func mustGetPort() string {

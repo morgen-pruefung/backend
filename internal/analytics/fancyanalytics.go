@@ -19,9 +19,21 @@ type Client struct {
 }
 
 func NewClient() *Client {
+	projectID := mustGetProjectID()
+	if projectID == "" {
+		fmt.Println("Could not create analytics client, project ID is missing")
+		return nil
+	}
+
+	apiKey := mustGetAPIKey()
+	if apiKey == "" {
+		fmt.Println("Could not create analytics client, API key is missing")
+		return nil
+	}
+
 	return &Client{
-		projectID: mustGetProjectID(),
-		apiKey:    mustGetAPIKey(),
+		projectID: projectID,
+		apiKey:    apiKey,
 	}
 }
 
@@ -52,6 +64,10 @@ func (c *Client) SendEvent(event Event) error {
 }
 
 func SendEvent(event Event) {
+	if fancyAnalyticsClient == nil {
+		return
+	}
+
 	err := fancyAnalyticsClient.SendEvent(event)
 	if err != nil {
 		log.Printf("Failed to track event: %v", err)
@@ -61,7 +77,7 @@ func SendEvent(event Event) {
 func mustGetProjectID() string {
 	projectID := os.Getenv("FANCYANALYTICS_PROJECT_ID")
 	if projectID == "" {
-		log.Fatal("FANCYANALYTICS_PROJECT_ID is required")
+		return ""
 	}
 
 	return projectID
@@ -70,7 +86,7 @@ func mustGetProjectID() string {
 func mustGetAPIKey() string {
 	apiKey := os.Getenv("FANCYANALYTICS_API_KEY")
 	if apiKey == "" {
-		log.Fatal("FANCYANALYTICS_API_KEY is required")
+		return ""
 	}
 
 	return apiKey
