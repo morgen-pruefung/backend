@@ -10,6 +10,7 @@ services:
       - FANCYANALYTICS_PROJECT_ID=
       - FANCYANALYTICS_API_KEY=
       - MONGODB_URI=
+      - MONGODB_DB_NAME=mp-prod
     networks:
       - mp-network
     depends_on:
